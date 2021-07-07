@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
-#include "HiddenWords/HiddenWord.h"
 
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
+    LoadResources();
     SetupGame();
-    //PrintLine(TEXT("The Hidden word is: %s", *HiddenWord));
 }
 
 void UBullCowCartridge::OnInput(const FString &Input) // When the player hits enter
@@ -40,7 +39,7 @@ void UBullCowCartridge::ProcessGuess(const FString &Input)
 
 void UBullCowCartridge::SetupGame()
 {
-    HiddenWord = Words[FMath::RandRange(0, Words.Num() - 1)];
+    HiddenWord = Isograms[FMath::RandRange(0, Isograms.Num() - 1)];
     Lives = HiddenWord.Len();
     IsGameOver = false;
 
@@ -112,4 +111,10 @@ bool UBullCowCartridge::IsIsogram(const FString &Input) const
     }
 
     return true;
+}
+
+void UBullCowCartridge::LoadResources()
+{
+    const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("HiddenWords/words_parsed.txt");
+    FFileHelper::LoadFileToStringArray(Isograms, *WordListhPath);
 }
