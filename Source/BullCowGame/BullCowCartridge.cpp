@@ -51,6 +51,8 @@ void UBullCowCartridge::Introduction() const
     PrintLine(TEXT("Welcome to Bull Cows!"));
     PrintLine(TEXT("Guess the %i letter word!"), HiddenWord.Len());
     PrintLine(TEXT("You have %i lives."), Lives);
+    PrintLine(TEXT("A Bull is a correct letter on the right place"));
+    PrintLine(TEXT("A Cow is a correct letter"));
     PrintLine(TEXT("Press Enter continue..."));
 }
 
@@ -93,6 +95,8 @@ void UBullCowCartridge::VerifyGuess(const FString &Input)
     }
     else
     {
+        auto count = GetBullCows(Input);
+        PrintLine(TEXT("You have %i Bulls and %i Cows"), count.Bulls, count.Cows);
         PrintLine(TEXT("Sorry, Try guessing again!\nYou have %i lives remaining"), --Lives);
     }
 }
@@ -117,4 +121,29 @@ void UBullCowCartridge::LoadResources()
 {
     const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("HiddenWords/words_parsed.txt");
     FFileHelper::LoadFileToStringArray(Isograms, *WordListhPath);
+}
+
+FBullCowCount UBullCowCartridge::GetBullCows(const FString &Input) const
+{
+    FBullCowCount count = {0, 0};
+
+    for (int32 i = 0; i < Input.Len(); i++)
+    {
+        if (Input[i] == HiddenWord[i])
+        {
+            count.Bulls++;
+            continue;
+        }
+
+        for (int32 j = 0; j < Input.Len(); j++)
+        {
+            if (Input[j] == HiddenWord[j])
+            {
+                count.Cows++;
+                break;
+            }
+        }
+    }
+
+    return count;
 }
